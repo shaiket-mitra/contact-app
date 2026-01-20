@@ -15,6 +15,7 @@ export default function ContactEditModal() {
 
   const isOpen = isContactModalOpen && contactModalMode === "edit";
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -26,6 +27,7 @@ export default function ContactEditModal() {
   }, [isOpen]);
 
   const handleClose = () => {
+    if (loading) return; // submitting চললে close আটকাবে (optional)
     setErrors({});
     closeContactModal();
   };
@@ -45,9 +47,13 @@ export default function ContactEditModal() {
 
     if (Object.keys(validationErrors).length > 0) return;
 
-    await submitEditContactModal();
-
-    setErrors({});
+    try {
+      setLoading(true);
+      await submitEditContactModal();
+      setErrors({});
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -61,7 +67,10 @@ export default function ContactEditModal() {
         role="dialog"
         aria-modal="true"
       >
-        <div className="modal-dialog modal-dialog-centered modal-md" role="document">
+        <div
+          className="modal-dialog modal-dialog-centered modal-md"
+          role="document"
+        >
           <div className="modal-content">
             <div className="modal-header justify-content-center">
               <h5 className="modal-title">Edit Contact</h5>
@@ -78,9 +87,12 @@ export default function ContactEditModal() {
                     type="text"
                     id="first_name"
                     name="first_name"
-                    className={`form-control ${errors.first_name ? "is-invalid" : ""}`}
+                    className={`form-control ${
+                      errors.first_name ? "is-invalid" : ""
+                    }`}
                     value={draft?.first_name || ""}
                     onChange={handleChange}
+                    disabled={loading}
                   />
                   {errors.first_name && (
                     <div className="invalid-feedback">{errors.first_name}</div>
@@ -96,9 +108,12 @@ export default function ContactEditModal() {
                     type="text"
                     id="last_name"
                     name="last_name"
-                    className={`form-control ${errors.last_name ? "is-invalid" : ""}`}
+                    className={`form-control ${
+                      errors.last_name ? "is-invalid" : ""
+                    }`}
                     value={draft?.last_name || ""}
                     onChange={handleChange}
+                    disabled={loading}
                   />
                   {errors.last_name && (
                     <div className="invalid-feedback">{errors.last_name}</div>
@@ -114,9 +129,12 @@ export default function ContactEditModal() {
                     type="email"
                     id="email"
                     name="email"
-                    className={`form-control ${errors.email ? "is-invalid" : ""}`}
+                    className={`form-control ${
+                      errors.email ? "is-invalid" : ""
+                    }`}
                     value={draft?.email || ""}
                     onChange={handleChange}
+                    disabled={loading}
                   />
                   {errors.email && (
                     <div className="invalid-feedback">{errors.email}</div>
@@ -132,9 +150,12 @@ export default function ContactEditModal() {
                     type="text"
                     id="phone"
                     name="phone"
-                    className={`form-control ${errors.phone ? "is-invalid" : ""}`}
+                    className={`form-control ${
+                      errors.phone ? "is-invalid" : ""
+                    }`}
                     value={draft?.phone || ""}
                     onChange={handleChange}
+                    disabled={loading}
                   />
                   {errors.phone && (
                     <div className="invalid-feedback">{errors.phone}</div>
@@ -153,19 +174,36 @@ export default function ContactEditModal() {
                     className="form-control"
                     value={draft?.address || ""}
                     onChange={handleChange}
+                    disabled={loading}
                   />
                 </div>
               </div>
 
               <div className="modal-footer">
-                <button type="submit" className="btn btn-primary">
-                  Save
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <>
+                      <span
+                        className="spinner-border spinner-border-sm me-2 mr-1"
+                        role="status"
+                        aria-hidden="true"
+                      ></span>
+                      Saving...
+                    </>
+                  ) : (
+                    "Save"
+                  )}
                 </button>
 
                 <button
                   type="button"
                   className="btn btn-outline-secondary"
                   onClick={handleClose}
+                  disabled={loading}
                 >
                   Cancel
                 </button>

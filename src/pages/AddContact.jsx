@@ -16,6 +16,7 @@ export default function AddContact() {
   });
 
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,8 +31,13 @@ export default function AddContact() {
 
     if (Object.keys(validationErrors).length > 0) return;
 
-    await addContact(form);
-    nav("/");
+    try {
+      setLoading(true);
+      await addContact(form);
+      nav("/");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -64,6 +70,7 @@ export default function AddContact() {
                         }`}
                         value={form.first_name}
                         onChange={handleChange}
+                        disabled={loading}
                       />
                       {errors.first_name && (
                         <div className="invalid-feedback">
@@ -91,6 +98,7 @@ export default function AddContact() {
                         }`}
                         value={form.last_name}
                         onChange={handleChange}
+                        disabled={loading}
                       />
                       {errors.last_name && (
                         <div className="invalid-feedback">
@@ -115,6 +123,7 @@ export default function AddContact() {
                         }`}
                         value={form.email}
                         onChange={handleChange}
+                        disabled={loading}
                       />
                       {errors.email && (
                         <div className="invalid-feedback">{errors.email}</div>
@@ -137,6 +146,7 @@ export default function AddContact() {
                         }`}
                         value={form.phone}
                         onChange={handleChange}
+                        disabled={loading}
                       />
                       {errors.phone && (
                         <div className="invalid-feedback">{errors.phone}</div>
@@ -160,6 +170,7 @@ export default function AddContact() {
                         className="form-control"
                         value={form.address}
                         onChange={handleChange}
+                        disabled={loading}
                       />
                     </div>
                   </div>
@@ -171,10 +182,32 @@ export default function AddContact() {
                       <button
                         type="submit"
                         className="btn btn-primary btn-space"
+                        disabled={loading}
                       >
-                        Save
+                        {loading ? (
+                          <>
+                            <span
+                              className="spinner-border spinner-border-sm me-2 mr-2"
+                              role="status"
+                              aria-hidden="true"
+                            ></span>
+                            Saving...
+                          </>
+                        ) : (
+                          "Save"
+                        )}
                       </button>
-                      <Link to="/" className="btn btn-outline-secondary ms-2">
+
+                      <Link
+                        to="/"
+                        className={`btn btn-outline-secondary ms-2 ${
+                          loading ? "disabled" : ""
+                        }`}
+                        aria-disabled={loading}
+                        onClick={(e) => {
+                          if (loading) e.preventDefault();
+                        }}
+                      >
                         Cancel
                       </Link>
                     </div>
