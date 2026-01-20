@@ -4,10 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"npm:dev:client\" \"npm:dev:server\"",
-    "dev:client": "vite",
-    "dev:server": "json-server --watch db.json --port 4000",
-    "build": "vite build",
+    "dev": "node init && concurrently \"npm:dev:client\" \"npm:dev:server\"",
+    "dev:client": "node init && vite",
+    "dev:server": "node init && json-server --watch db.json --port 4000",
+    "build": "node init && vite build",
     "preview": "vite preview",
     "lint": "eslint ."
   },

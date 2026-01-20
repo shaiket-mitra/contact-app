@@ -54,8 +54,7 @@ export function ContactsProvider({ children }) {
 
   // ---------------- CONTACT FINDER ----------------
   const findContact = (contactOrId) => {
-    const id =
-      typeof contactOrId === "object" ? contactOrId?.id : contactOrId;
+    const id = typeof contactOrId === "object" ? contactOrId?.id : contactOrId;
     return contacts.find((c) => String(c.id) === String(id)) || null;
   };
 
@@ -111,34 +110,37 @@ export function ContactsProvider({ children }) {
 
   // ---------------- SEARCH + FILTER ----------------
   const visibleContacts = useMemo(() => {
-    let filtered = contacts;
     const q = searchText.trim().toLowerCase();
 
+    let filtered = contacts;
     if (q) {
-      filtered = filtered.filter((c) =>
+      filtered = contacts.filter((c) =>
         [c.first_name, c.last_name, c.email, c.phone]
           .filter(Boolean)
           .join(" ")
           .toLowerCase()
-          .includes(q)
+          .includes(q),
       );
     }
 
     const sorted = [...filtered];
+
     if (sortMode === "first_name") {
       sorted.sort((a, b) =>
-        (a.first_name || "").localeCompare(b.first_name || "")
+        (a.first_name || "").localeCompare(b.first_name || ""),
       );
     } else if (sortMode === "last_name") {
       sorted.sort((a, b) =>
-        (a.last_name || "").localeCompare(b.last_name || "")
+        (a.last_name || "").localeCompare(b.last_name || ""),
       );
     } else if (sortMode === "oldest") {
       sorted.sort(
-        (a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0)
+        (a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0),
       );
     } else {
-      sorted.sort((a, b) => (a.id ?? 0) - (b.id ?? 0));
+      sorted.sort(
+        (a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0),
+      );
     }
 
     return sorted;
